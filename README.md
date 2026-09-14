@@ -30,33 +30,41 @@
 
 ## 📸 Screenshots
 
-### 🚀 Onboarding & Login
+### Onboarding & Login
 <p align="center">
-  <img src="./docs/images/welcome.png" width="45%" alt="Welcome Screen" />
-  <img src="./docs/images/login.png" width="45%" alt="Login Screen" />
+  <img src="./docs/images/welcome.png" width="80%" alt="Welcome Screen" />
+</p>
+<p align="center">
+  <img src="./docs/images/login.png" width="80%" alt="Login Screen" />
 </p>
 
-### 🌾 Farmer Dashboard & Market Prices
+### Farmer Dashboard & Market Prices
 <p align="center">
-  <img src="./docs/images/farmer_dashboard.png" width="45%" alt="Farmer Dashboard" />
-  <img src="./docs/images/marketprice.png" width="45%" alt="Market Prices" />
+  <img src="./docs/images/farmer_dashboard.png" width="80%" alt="Farmer Dashboard" />
+</p>
+<p align="center">
+  <img src="./docs/images/marketprice.png" width="80%" alt="Market Prices" />
 </p>
 
-### 🤖 AI Core: Disease Scanner & Crop Recommendation
+### AI Core: Disease Scanner & Crop Recommendation
 <p align="center">
-  <img src="./docs/images/disease_scanner.png" width="45%" alt="AI Disease Scanner" />
-  <img src="./docs/images/recomendation.png" width="45%" alt="Crop Recommendation" />
+  <img src="./docs/images/disease_scanner.png" width="80%" alt="AI Disease Scanner" />
+</p>
+<p align="center">
+  <img src="./docs/images/recomendation.png" width="80%" alt="Crop Recommendation" />
 </p>
 
-### 📈 AI Core: Yield Prediction & Intelligent Assistant
+### AI Core: Yield Prediction & Intelligent Assistant
 <p align="center">
-  <img src="./docs/images/prediction.png" width="45%" alt="Yield Prediction" />
-  <img src="./docs/images/assistant.png" width="45%" alt="AI Assistant" />
+  <img src="./docs/images/prediction.png" width="80%" alt="Yield Prediction" />
+</p>
+<p align="center">
+  <img src="./docs/images/assistant.png" width="80%" alt="AI Assistant" />
 </p>
 
-### 👨‍💼 Officer Analytics Portal
+### Officer Analytics Portal
 <p align="center">
-  <img src="./docs/images/officer_dashboard.png" width="90%" alt="Officer Dashboard" />
+  <img src="./docs/images/officer_dashboard.png" width="100%" alt="Officer Dashboard" />
 </p>
 
 ---
