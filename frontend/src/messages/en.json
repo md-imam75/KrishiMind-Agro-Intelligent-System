@@ -1,0 +1,115 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try Again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "next": "Next",
+    "back": "Back",
+    "skip": "Skip",
+    "done": "Done",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add",
+    "confirm": "Confirm",
+    "offline": "You are offline",
+    "lastUpdated": "Last updated"
+  },
+  "onboarding": {
+    "title1": "Know What to Plant",
+    "desc1": "Get personalized crop recommendations based on your soil and season.",
+    "title2": "Scan a Sick Leaf",
+    "desc2": "Instantly identify plant diseases and get treatment solutions.",
+    "title3": "Know Your Yield",
+    "desc3": "Predict your harvest outcome before you even plant.",
+    "permissionsTitle": "We need your permission",
+    "permissionsDesc": "To provide accurate weather and disease scanning, we need access to your camera and location.",
+    "gotIt": "Got It"
+  },
+  "auth": {
+    "loginTitle": "Enter your phone number",
+    "loginSubtitle": "Welcome to KrishiMind",
+    "phoneLabel": "Phone Number",
+    "sendCode": "Send Code",
+    "otpTitle": "Enter OTP",
+    "otpSent": "Code sent to",
+    "resendIn": "Resend in",
+    "resendCode": "Resend Code",
+    "changePhone": "Change phone number",
+    "verify": "Verify",
+    "setupTitle": "Set up your farm profile",
+    "setupSubtitle": "Enter your details to get personalized advice",
+    "skipForNow": "Skip for now",
+    "nameLabel": "Your Name (Optional)",
+    "districtLabel": "District",
+    "upazilaLabel": "Upazila",
+    "landLabel": "Total Land Size",
+    "saveContinue": "Save & Continue"
+  },
+  "dashboard": {
+    "greeting": "Dashboard",
+    "scan": "Scan Disease",
+    "recommend": "Crop Recommendation",
+    "yield": "Yield Predictor",
+    "weather": "Weather",
+    "market": "Market Prices",
+    "assistant": "Assistant",
+    "recentActivity": "Recent Activity",
+    "noActivity": "No recent activity.",
+    "allClear": "All clear",
+    "riskHigh": "High risk alert"
+  },
+  "farm": {
+    "myFarm": "My Farm",
+    "crops": "Crops",
+    "soil": "Soil & Land",
+    "history": "History",
+    "addCrop": "Add New Crop",
+    "noCrops": "Add your first crop",
+    "markHarvested": "Mark as Harvested",
+    "soilType": "Soil Type",
+    "waterAvail": "Water Availability",
+    "elevation": "Land Elevation"
+  },
+  "navigation": {
+    "home": "Home",
+    "farm": "Farm",
+    "scan": "Scan",
+    "market": "Market",
+    "profile": "Profile"
+  },
+  "crops": {
+    "rice": "Rice",
+    "wheat": "Wheat",
+    "jute": "Jute",
+    "potato": "Potato"
+  },
+  "soilTypes": {
+    "clay": "Clay",
+    "loam": "Loam",
+    "sandy_loam": "Sandy Loam",
+    "silty": "Silty",
+    "other": "Other"
+  },
+  "waterTypes": {
+    "irrigated_canal": "Canal Irrigated",
+    "irrigated_shallow_tube": "Shallow Tube Well",
+    "irrigated_deep_tube": "Deep Tube Well",
+    "rain_fed": "Rain Fed",
+    "mixed": "Mixed"
+  },
+  "growthStages": {
+    "seedling": "Seedling",
+    "vegetative": "Vegetative",
+    "flowering": "Flowering",
+    "grain_filling": "Grain Filling",
+    "maturity": "Maturity",
+    "unknown": "Unknown"
+  },
+  "riskLevels": {
+    "HIGH": "HIGH",
+    "MEDIUM": "MEDIUM",
+    "LOW": "LOW"
+  }
+}

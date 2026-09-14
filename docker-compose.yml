@@ -1,0 +1,126 @@
+
+services:
+  # ─── Database ───────────────────────────────────────────────────────────────
+  db:
+    image: postgis/postgis:16-3.4-alpine
+    container_name: krishimind_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: krishimind
+      POSTGRES_PASSWORD: krishimind
+      POSTGRES_DB: krishimind
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U krishimind -d krishimind"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Redis ──────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: krishimind_redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # ─── Backend (FastAPI) ──────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: krishimind_backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://krishimind:krishimind@db:5432/krishimind
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # ─── DB Migrations (one-shot) ───────────────────────────────────────────────
+  migrate:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: krishimind_migrate
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://krishimind:krishimind@db:5432/krishimind
+    depends_on:
+      db:
+        condition: service_healthy
+    command: alembic upgrade head
+    profiles:
+      - migrate
+  # ─── Celery Worker ──────────────────────────────────────────────────────────
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: krishimind_worker
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://krishimind:krishimind@db:5432/krishimind
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: celery -A app.worker.celery_app worker --loglevel=info --concurrency=2
+
+  # ─── Frontend (Next.js — Farmer App) ───────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: krishimind_frontend
+    restart: unless-stopped
+    env_file:
+      - ./frontend/.env.local
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  # ─── Nginx Reverse Proxy ────────────────────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: krishimind_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    name: krishimind_network
