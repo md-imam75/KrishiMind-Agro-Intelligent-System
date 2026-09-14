@@ -1,217 +1,115 @@
-# 🌾 KrishiMind
+# 🌱 KrishiMind — Agro-Intelligent System
 
-> AI-Powered Crop Intelligence & Farmer Decision Support Platform for Bangladesh
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostGIS-16-336791?style=for-the-badge&logo=postgresql)](https://postgis.net/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
 
-**KrishiMind** helps Bangladeshi farmers make smarter decisions by combining satellite weather data, Gemini AI vision, and agricultural expertise into a Bangla-first mobile web experience — and gives district officers a regional monitoring dashboard.
-
----
-
-## 📁 Project Structure
-
-```
-E:\krishimind\
-├── backend/          # FastAPI (Python 3.11) — B1 Auth + B2 Farm Profile
-├── frontend/         # Next.js 14 (App Router) — F1–F4 Farmer Screens
-├── nginx/            # Reverse proxy config
-├── docker-compose.yml
-└── README.md
-```
+**KrishiMind** is an AI-powered agricultural intelligence platform designed specifically for Bangladesh. It bridges the gap between grassroots farmers and government agricultural officers by providing real-time crop recommendations, AI disease scanning, market insights, and localized broadcast alerts via an intuitive bilingual (Bangla & English) interface.
 
 ---
 
-## 🚀 Quick Start (Docker Compose)
+## ✨ Key Features
+
+### For Farmers 🌾
+* **Bilingual Onboarding:** Easy setup using phone numbers with secure OTP verification, available natively in both English and Bengali.
+* **Smart Farm Profiling:** Farmers can register their plots with specific soil types, land elevation, and water availability to receive tailored advice.
+* **AI Crop Recommendations:** Powered by Gemini AI, suggests the most profitable and suitable crops based on plot conditions and current season.
+* **Disease Scanner:** Upload photos of infected crops for instant AI-based disease diagnosis and actionable remedies.
+* **Yield Prediction:** Machine learning models predict expected harvest volume using farm parameters.
+* **Market Insights:** Real-time mandi (market) price tracking across various districts.
+* **Agricultural Advisory:** Localized weather forecasts coupled with actionable agronomic advice.
+
+### For DAE Officers 📊
+* **Command Dashboard:** A professional analytics portal for district/regional officers to monitor agricultural activities.
+* **Risk Heatmaps:** PostGIS-powered geospatial data visualization showing potential risk zones (e.g., floods, pests).
+* **Broadcast Alerts:** Officers can send instantaneous, localized emergency push notifications to all farmers in specific districts via async Celery background workers.
+* **Farmer Directory:** Searchable database tracking farmer onboarding and active crop progress.
+
+---
+
+## 📸 Screenshots
+
+> **Note:** Screenshots will be added here showcasing the bilingual Farmer App and the Officer Command Dashboard.
+
+*Add screenshots here:*
+* `[Screenshot 1: Farmer Dashboard (Bangla)]`
+* `[Screenshot 2: AI Disease Scanner]`
+* `[Screenshot 3: Officer Analytics Dashboard]`
+* `[Screenshot 4: Broadcast Alert System]`
+
+---
+
+## 🏗️ System Architecture
+
+KrishiMind is built using a modern, scalable microservices architecture orchestrated with Docker Compose:
+
+* **Frontend:** Next.js 14 (App Router), React, Tailwind CSS, TypeScript
+* **Backend API:** FastAPI (Python 3.11), Pydantic v2
+* **Database:** PostgreSQL 16 with PostGIS extensions (Asyncpg engine)
+* **Background Workers:** Celery + Redis for async tasks (like bulk notifications)
+* **ORM & Migrations:** SQLAlchemy 2.0 + Alembic
+* **Authentication:** JWT (JSON Web Tokens) with secure bcrypt hashing
+* **Reverse Proxy:** Nginx
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
+Make sure you have [Docker](https://www.docker.com/products/docker-desktop/) and [Docker Compose](https://docs.docker.com/compose/) installed on your machine.
 
-### 1. Clone / open the project
-```powershell
-cd E:\krishimind
+### 1. Clone the repository
+```bash
+git clone https://github.com/md-imam75/KrishiMind-Agro-Intelligent-System.git
+cd KrishiMind-Agro-Intelligent-System
 ```
 
-### 2. Configure environment variables
-```powershell
-# Backend .env is already created with dev defaults
-# Optionally add your Gemini API key (needed for Phase 2):
-notepad backend\.env
+### 2. Environment Variables
+Create a `.env` file in the `backend/` directory (you can copy `.env.example`):
+```bash
+cp backend/.env.example backend/.env
+```
+Ensure you add your `GEMINI_API_KEY` to the `.env` file for the AI features to work.
+
+### 3. Build and Run via Docker Compose
+Run the following command in the root directory to build the stack. (This process takes a few minutes as it pulls base images and installs dependencies).
+```bash
+docker compose up -d --build
 ```
 
-### 3. Start all services
-```powershell
-docker compose up --build
+### 4. Run Database Migrations
+Once the containers are healthy, execute Alembic migrations to build the tables:
+```bash
+docker compose exec backend alembic upgrade head
 ```
 
-### 4. Run database migrations (first time only)
-```powershell
-docker compose run --rm migrate
+### 5. Seed an Officer Account (Optional)
+To test the Officer Dashboard, you can seed an admin account into the database:
+```bash
+docker compose exec backend python seed_officer.py
 ```
+*(This creates an officer: `admin@krishimind.gov.bd` / `admin123` assigned to Chattogram)*
 
-### 5. Open the app
-| Service | URL |
-|---|---|
-| 🌾 Farmer App | http://localhost:3000 |
-| 🔧 API Docs (Swagger) | http://localhost:8000/docs |
-| ❤️ Health Check | http://localhost:8000/health |
-| 🔀 Nginx Proxy | http://localhost:80 |
+### 6. Access the Application
+* **Web App (Farmers & Officers):** [http://localhost:3000](http://localhost:3000)
+* **Backend API Documentation (Swagger):** [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ---
 
-## 🛠️ Local Development (Without Docker)
-
-### Backend
-
-**Requirements:** Python 3.11+, PostgreSQL 15+, Redis 7+
-
-```powershell
-cd E:\krishimind\backend
-
-# Create virtual environment
-python -m venv venv
-.\venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Set up .env (already done — edit if needed)
-copy .env.example .env
-
-# Run migrations
-alembic upgrade head
-
-# Start dev server
-uvicorn app.main:app --reload --port 8000
-```
-
-### Frontend
-
-**Requirements:** Node.js 20+
-
-```powershell
-cd E:\krishimind\frontend
-
-# Install dependencies
-npm install
-
-# Set up env
-copy .env.local.example .env.local
-
-# Start dev server
-npm run dev
-```
-
-App runs at **http://localhost:3000**
-
----
-
-## 🔐 Authentication (Dev Mode)
-
-OTP SMS is **skipped** in dev mode. Instead:
-
-1. Enter any valid BD phone number (e.g. `01712345678`)
-2. Click **Send Code**
-3. Check the **backend console/logs** for the OTP:
-   ```
-   [DEV OTP] Phone: +8801712345678 | OTP: 847291
-   ```
-4. Enter that code to log in
-
----
-
-## 📱 Phase 1 Screens
-
-| Screen | Path | Description |
-|---|---|---|
-| **F1** Language & Onboarding | `/bn/onboarding` | Language selection + feature carousel |
-| **F2** Sign Up / Login | `/bn/login` | Phone + OTP + farm profile setup |
-| **F3** Home Dashboard | `/bn/dashboard` | Snapshot cards, risk banner, quick-access grid |
-| **F4** My Farm & Crops | `/bn/farm` | Crop list, soil profile, crop history |
-
-Switch to English: `/en/onboarding`
-
----
-
-## 🏗️ Backend API
-
-Base URL: `http://localhost:8000`
-
-### Auth Endpoints (B1)
-| Method | Path | Description |
-|---|---|---|
-| `POST` | `/api/v1/auth/otp/request` | Request OTP (returns OTP in dev mode) |
-| `POST` | `/api/v1/auth/otp/verify` | Verify OTP → get JWT tokens |
-| `POST` | `/api/v1/auth/officer/login` | Officer login (email + password) |
-| `POST` | `/api/v1/auth/refresh` | Refresh access token |
-| `POST` | `/api/v1/auth/logout` | Revoke refresh token |
-
-### Farmer Endpoints (B2)
-| Method | Path | Description |
-|---|---|---|
-| `GET` | `/api/v1/farmer/profile` | Get farmer profile |
-| `PUT` | `/api/v1/farmer/profile` | Update profile (name, district, etc.) |
-| `GET` | `/api/v1/farmer/profile/completeness` | Profile completeness check |
-| `GET` | `/api/v1/farmer/plots` | List all plots |
-| `POST` | `/api/v1/farmer/plots` | Create a plot |
-| `PUT` | `/api/v1/farmer/plots/{id}` | Update a plot |
-| `GET/POST` | `/api/v1/farmer/plots/{id}/crop` | Get / set active crop |
-| `POST` | `/api/v1/farmer/plots/{id}/harvest` | Mark crop as harvested |
-| `GET/POST` | `/api/v1/farmer/plots/{id}/history` | Crop history |
-
----
-
-## 🗄️ Database Schema
-
-```
-farmers ──< farm_profiles ──< plots ──< active_crops
-                                    └──< crop_history
-farmers ──< refresh_tokens
-otp_verifications
-officers
+## 🧪 Running Tests
+The backend includes a comprehensive automated test suite (Pytest) for critical API endpoints.
+```bash
+docker compose exec backend pytest
 ```
 
 ---
 
-## 🌐 Environment Variables
-
-### Backend (`backend/.env`)
-| Variable | Default | Description |
-|---|---|---|
-| `DATABASE_URL` | `postgresql+asyncpg://...` | PostgreSQL connection |
-| `REDIS_URL` | `redis://redis:6379/0` | Redis connection |
-| `SECRET_KEY` | *(set in .env)* | JWT signing secret — **change in prod!** |
-| `OTP_DEV_MODE` | `true` | Print OTP to console instead of SMS |
-| `GEMINI_API_KEY` | *(empty)* | Needed for Phase 2 AI features |
-
-### Frontend (`frontend/.env.local`)
-| Variable | Default | Description |
-|---|---|---|
-| `NEXT_PUBLIC_API_URL` | `http://localhost:8000` | Backend base URL |
+## 🤝 Contributing
+Contributions, issues, and feature requests are welcome! 
+Feel free to check the [issues page](https://github.com/md-imam75/KrishiMind-Agro-Intelligent-System/issues).
 
 ---
 
-## 📋 Development Phases
-
-| Phase | Status | Features |
-|---|---|---|
-| **Phase 1** | ✅ Complete | Auth (B1), Farm Profile (B2), F1–F4 screens |
-| **Phase 2** | 🔜 Next | Crop Rec (B3), Disease Scan (B4), Yield (B6), Weather (B7), F5–F10 |
-| **Phase 3** | 📅 Planned | Risk (B5), Market (B8), Assistant (B9), Notifications, F11–F14 |
-| **Phase 4** | 📅 Planned | Officer Dashboard (A1–A8) |
-| **Phase 5** | 📅 Planned | Tests, CI/CD, production hardening |
-
----
-
-## 🤝 Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Frontend | Next.js 14 (App Router) + TypeScript + Tailwind CSS |
-| i18n | next-intl (Bangla 🇧🇩 + English 🇬🇧) |
-| State | Zustand + TanStack Query |
-| Backend | FastAPI (Python 3.11) |
-| Database | PostgreSQL 16 + PostGIS |
-| Cache | Redis 7 |
-| AI/ML | Google Gemini API (Phase 2+) |
-| Maps | Leaflet + OpenStreetMap (Phase 4) |
-| Auth | JWT (python-jose) + Phone OTP |
-| Container | Docker + Docker Compose |
-| Proxy | Nginx |
+## 📄 License
+This project is licensed under the MIT License - see the LICENSE file for details.

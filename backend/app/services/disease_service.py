@@ -142,10 +142,110 @@ DISEASE_KNOWLEDGE_BASE: Dict[str, Dict[str, Any]] = {
     }
 }
 
-async def diagnose_leaf_image(crop_hint: str, image_bytes: bytes, filename: str) -> DiseaseScanResponse:
-    crop_lower = (crop_hint or "rice").lower()
+import base64
+import json
+import httpx
+from app.core.config import settings
 
-    # Match key in database
+async def diagnose_leaf_image(crop_hint: str, image_bytes: bytes, filename: str) -> DiseaseScanResponse:
+    if settings.GEMINI_API_KEY and settings.GEMINI_API_KEY != "your-gemini-api-key":
+        try:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={settings.GEMINI_API_KEY}"
+            b64_img = base64.b64encode(image_bytes).decode('utf-8')
+            
+            prompt = (
+                "You are an expert plant pathologist AI for KrishiMind. "
+                "Look at the uploaded image. First, determine if the image contains a plant, leaf, crop, or agricultural field. "
+                "If it is clearly NOT a plant (e.g. human face, animal, car, random object), return ONLY this exact string: NOT_A_PLANT\n\n"
+                "If it IS a plant, diagnose it and return ONLY a raw JSON object (without markdown code blocks) matching this schema exactly:\n"
+                "{\n"
+                '  "is_healthy": false,\n'
+                '  "crop": "name of the crop",\n'
+                '  "name_en": "English disease name",\n'
+                '  "name_bn": "Bengali disease name",\n'
+                '  "severity": "low", "moderate", or "high",\n'
+                '  "symptoms_bn": "Bengali symptoms",\n'
+                '  "symptoms_en": "English symptoms",\n'
+                '  "chemical_bn": ["chemical treatments in Bengali"],\n'
+                '  "chemical_en": ["chemical treatments in English"],\n'
+                '  "organic_bn": ["organic treatments in Bengali"],\n'
+                '  "organic_en": ["organic treatments in English"],\n'
+                '  "prevention_bn": ["preventions in Bengali"],\n'
+                '  "prevention_en": ["preventions in English"]\n'
+                "}"
+            )
+            
+            payload = {
+                "contents": [
+                    {
+                        "parts": [
+                            {"text": prompt},
+                            {
+                                "inline_data": {
+                                    "mime_type": "image/jpeg",
+                                    "data": b64_img
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "generationConfig": {
+                    "temperature": 0.2
+                }
+            }
+            
+            async with httpx.AsyncClient() as client:
+                resp = await client.post(url, json=payload, timeout=30.0)
+                if resp.status_code == 200:
+                    resp_data = resp.json()
+                    text = resp_data["candidates"][0]["content"]["parts"][0]["text"].strip()
+                    if "NOT_A_PLANT" in text:
+                        return DiseaseScanResponse(
+                            id=str(uuid.uuid4()),
+                            crop_name="Unknown",
+                            disease_name_en="Not a Plant / Irrelevant Image",
+                            disease_name_bn="এটি কোনো গাছের ছবি নয়",
+                            confidence=1.0,
+                            severity="low",
+                            symptoms_bn="আপলোড করা ছবিটি কোনো গাছ বা ফসলের পাতার নয়। দয়া করে আক্রান্ত পাতার একটি পরিষ্কার ছবি আপলোড করুন।",
+                            symptoms_en="The uploaded image does not appear to be a plant or crop leaf. Please upload a clear picture of an infected leaf.",
+                            treatment=TreatmentPlan(
+                                chemical_bn=[], chemical_en=[], organic_bn=[], organic_en=[], prevention_bn=[], prevention_en=[]
+                            ),
+                            image_url=None
+                        )
+                    
+                    if text.startswith("```json"):
+                        text = text.replace("```json", "").replace("```", "").strip()
+                    if text.startswith("```"):
+                        text = text.replace("```", "").strip()
+                        
+                    parsed = json.loads(text)
+                    return DiseaseScanResponse(
+                        id=str(uuid.uuid4()),
+                        crop_name=parsed.get("crop", crop_hint or "Unknown"),
+                        disease_name_en=parsed.get("name_en", "Unknown Disease"),
+                        disease_name_bn=parsed.get("name_bn", "অজানা রোগ"),
+                        confidence=0.92,
+                        severity=parsed.get("severity", "moderate"),
+                        symptoms_bn=parsed.get("symptoms_bn", ""),
+                        symptoms_en=parsed.get("symptoms_en", ""),
+                        treatment=TreatmentPlan(
+                            chemical_bn=parsed.get("chemical_bn", []),
+                            chemical_en=parsed.get("chemical_en", []),
+                            organic_bn=parsed.get("organic_bn", []),
+                            organic_en=parsed.get("organic_en", []),
+                            prevention_bn=parsed.get("prevention_bn", []),
+                            prevention_en=parsed.get("prevention_en", [])
+                        ),
+                        image_url=None
+                    )
+        except Exception as e:
+            print(f"Gemini AI Diagnosis failed: {e}")
+            pass # Fallback to local hardcoded mock
+    
+    # Fallback Hardcoded logic
+    crop_lower = (crop_hint or "rice").lower()
     if "potato" in crop_lower or "আলু" in crop_lower:
         matched_key = "potato_late_blight"
         conf = 0.94
@@ -156,7 +256,6 @@ async def diagnose_leaf_image(crop_hint: str, image_bytes: bytes, filename: str)
         matched_key = "rice_brown_spot"
         conf = 0.86
     else:
-        # Default rice leaf blast
         matched_key = "rice_blast"
         conf = 0.95
 
@@ -180,5 +279,5 @@ async def diagnose_leaf_image(crop_hint: str, image_bytes: bytes, filename: str)
             prevention_bn=t["prevention_bn"],
             prevention_en=t["prevention_en"],
         ),
-        image_url=None, # Will be set by API route if saved
+        image_url=None,
     )
