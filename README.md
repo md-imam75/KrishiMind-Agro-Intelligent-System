@@ -30,13 +30,34 @@
 
 ## 📸 Screenshots
 
-> **Note:** Screenshots will be added here showcasing the bilingual Farmer App and the Officer Command Dashboard.
+### 🚀 Onboarding & Login
+<p align="center">
+  <img src="./docs/images/welcome.png" width="45%" alt="Welcome Screen" />
+  <img src="./docs/images/login.png" width="45%" alt="Login Screen" />
+</p>
 
-*Add screenshots here:*
-* `[Screenshot 1: Farmer Dashboard (Bangla)]`
-* `[Screenshot 2: AI Disease Scanner]`
-* `[Screenshot 3: Officer Analytics Dashboard]`
-* `[Screenshot 4: Broadcast Alert System]`
+### 🌾 Farmer Dashboard & Market Prices
+<p align="center">
+  <img src="./docs/images/farmer_dashboard.png" width="45%" alt="Farmer Dashboard" />
+  <img src="./docs/images/marketprice.png" width="45%" alt="Market Prices" />
+</p>
+
+### 🤖 AI Core: Disease Scanner & Crop Recommendation
+<p align="center">
+  <img src="./docs/images/disease_scanner.png" width="45%" alt="AI Disease Scanner" />
+  <img src="./docs/images/recomendation.png" width="45%" alt="Crop Recommendation" />
+</p>
+
+### 📈 AI Core: Yield Prediction & Intelligent Assistant
+<p align="center">
+  <img src="./docs/images/prediction.png" width="45%" alt="Yield Prediction" />
+  <img src="./docs/images/assistant.png" width="45%" alt="AI Assistant" />
+</p>
+
+### 👨‍💼 Officer Analytics Portal
+<p align="center">
+  <img src="./docs/images/officer_dashboard.png" width="90%" alt="Officer Dashboard" />
+</p>
 
 ---
 
